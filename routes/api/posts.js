@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/api/posts', (request, response) => {
+router.get('/', (request, response) => {
     response.send('Posts route');
 });
 

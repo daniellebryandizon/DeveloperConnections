@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/api/auth', (request, response) => {
+router.get('/', (request, response) => {
     response.send('Auth route');
 });
 
