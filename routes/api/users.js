@@ -30,10 +30,11 @@ router.post(
         if (!errors.isEmpty()) {
             return response.status(400).json({
                 errors: errors.array()
+                
             });
         }
 
-        //IF NO VLAIDATIONS
+        //IF NO VALIDATIONS
         const { name, email, password } = request.body;
 
         try {
