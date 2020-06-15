@@ -6,6 +6,7 @@ const { check, validationResult } = require('express-validator');
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
 
+//GET SPECIFIC PROFILE
 router.get('/me', auth, async (request, response) => {
     try {
         const { id, name, email, status } = request.body;
@@ -25,6 +26,7 @@ router.get('/me', auth, async (request, response) => {
     }
 });
 
+//CREATE AND UPDATE PROFILE
 router.post(
     '/',
     auth,
@@ -101,8 +103,119 @@ router.post(
         } catch (error) {
             console.error(error.message);
             response.status(500).send('Server error');
-        }   
+        }
     }
 );
+
+//GET ALL PROFILE
+router.get('/', async (request, response) => {
+    try {
+        const profiles = await Profile.find().populate('user', ['name', 'avatar']);
+        response.json(profiles);
+
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).send('Server');
+    }
+});
+
+//GET A PROFILE BY USER ID
+router.get('/user/:user_id', async (request, response) => {
+    try {
+        const profile = await Profile.findOne({ user: request.params.user_id }).populate('user', ['name', 'avatar']);
+
+        if (!profile) {
+            return response.status(401).json({
+                msg: 'There is no profile with this id'
+            });
+        }
+
+        return response.json(profile);
+
+    } catch (error) {
+        console.error(error.message);
+        if (error.kind == 'ObjectId') {
+            response.status(401).json({
+                msg: 'There is no profile with this id'
+            })
+        } else {
+            response.status(500).send('Server error');
+        }
+    }
+});
+
+//DELETE A PROFILE AND USER
+router.delete('/', auth, async (request, response) => {
+    try {
+        await Profile.findOneAndRemove({ user: request.user.id });
+
+        await User.findOneAndRemove({ _id: request.user.id });
+
+        response.send('User deleted');
+    } catch (error) {
+        console.error(error.message);
+        response.status(500).send('Server error');
+    }
+});
+
+//CREATE AND UPDATE PROFILE EXPREIENCE
+router.put(
+    '/experience',
+    [
+    auth, 
+        check('title', 'Title is required').not().isEmpty(),
+        check('company', 'Company is required').not().isEmpty(),
+        check('from', 'From date is required').not().isEmpty()
+    ],
+    async (request, response) => {
+        const errors = validationResult(request);   
+        
+        if (!errors.isEmpty()) {
+            response.status(401).json({
+                errors: errors.array()
+            })
+        }
+
+        const {
+            title,
+            company,
+            location,
+            from, to,
+            current,
+            description 
+        } = request.body;
+
+        const newExperience = {
+            title, company, location, from, to, current, description
+        };
+
+        try {
+            const profile = await Profile.findOne({ user: request.user.id });
+            profile.experience.unshift(newExperience);
+            await profile.save();
+            response.json(profile);
+        } catch (error) {
+            console.error(error.message);
+            response.status(500).send('Server error');
+        }
+
+    });
+
+//DELETE PROFILE EXPRIENCE
+router.delete('/experience/:exp_id', auth, async (request, response) => {
+    try {
+        const profile = await Profile.findOne({ user: request.user.id });
+
+        const removeExperience = profile.experience.map(item => item.id).indexOf(request.params.exp_id);
+        profile.experience.splice(removeExperience, 1);
+
+        await profile.save();
+
+        response.json(profile);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send('Server error');
+    }
+})
 
 module.exports = router;
