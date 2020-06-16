@@ -81,16 +81,16 @@ router.get('/:id', authentication, async (request, response) => {
 router.delete('/:id', authentication, async (request, response) => {
     try {
         const post = await Post.findById(request.params.id);
-        
+
         if (!post) return response.status(404).json({ msg: 'Post not found' });
 
-        if(post.user.toString() !== request.user.id) {
+        if (post.user.toString() !== request.user.id) {
             response.status(401).json({ msg: 'User not authorized' });
         }
 
         await post.remove();
 
-        response.send('Post removed');
+        response.json({ msg: 'Post removed' });
     } catch (error) {
         console.log(error.message);
 
@@ -100,5 +100,61 @@ router.delete('/:id', authentication, async (request, response) => {
             response.status(500).send('Server error');
         }
     }
-})
+});
+
+//LIKE A POST
+router.put('/like/:id', authentication, async (request, response) => {
+    try {
+        const post = await Post.findById(request.params.id);
+
+        if (!post) return response.status(404).json({ msg: 'Post not found' });
+
+        if (post.user.toString() !== request.user.id) {
+            response.status(401).json({ msg: 'User not authorized' });
+        }
+
+        if (post.likes.filter(like => like.user.toString() === request.user.id).length > 0) {
+            return response.status(400).json({ msg: 'Post already liked' });
+        }
+
+        post.likes.unshift({ user: request.user.id });
+
+        await post.save();
+
+        response.json(post);
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send('Server error');
+    }
+});
+
+router.put('/unlike/:id', authentication, async (request, response) => {
+
+    try {
+        const post = await Post.findById(request.params.id);
+
+        if (!post)
+            return response.status(404).json({ msg: 'Post not found' });
+
+        if (post.user.toString() !== request.user.id)
+            return response.status(401).json({ msg: 'User not authorized' });
+
+
+        if (post.likes.filter(like => like.user.toString() === request.user.id).length === 0)
+            return response.status(400).json({ msg: 'Post already unliked' });
+
+
+        const removeUserFromLikedPost = post.likes.map(like => like.id).indexOf({ user: request.user.id });
+        post.likes.splice(removeUserFromLikedPost, 1);
+
+        await post.save();
+        response.json(post);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send('Server error');
+    }
+
+
+});
 module.exports = router;
