@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
+const requestGit = require('request');
+const config = require('config');
 
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
@@ -162,14 +164,14 @@ router.delete('/', auth, async (request, response) => {
 router.put(
     '/experience',
     [
-    auth, 
+        auth,
         check('title', 'Title is required').not().isEmpty(),
         check('company', 'Company is required').not().isEmpty(),
         check('from', 'From date is required').not().isEmpty()
     ],
     async (request, response) => {
-        const errors = validationResult(request);   
-        
+        const errors = validationResult(request);
+
         if (!errors.isEmpty()) {
             response.status(401).json({
                 errors: errors.array()
@@ -182,7 +184,7 @@ router.put(
             location,
             from, to,
             current,
-            description 
+            description
         } = request.body;
 
         const newExperience = {
@@ -217,5 +219,29 @@ router.delete('/experience/:exp_id', auth, async (request, response) => {
         response.status(500).send('Server error');
     }
 })
+
+router.get('/github/:username', (request, response) => {
+    try {
+        const options = {
+            uri: `https://api.github.com/users/${request.params.username}/repos?per_page=5&
+            sort=created:asc&client_id=${config.get('githubClientId')}&client_secret=${config.get('githubSecret')}`,
+            method: 'GET',
+            headers: { 'user-agent': 'node.js' }
+        }
+
+        requestGit(options, (error, res, body) => {
+            if(error) console.log(error)
+
+            if(res.statusCode !== 200) {
+                response.status(404).json({ msg: 'No Github profile found '});
+            }
+
+            response.json(JSON.parse(body));
+        })
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send('Server error');
+    }
+});
 
 module.exports = router;
