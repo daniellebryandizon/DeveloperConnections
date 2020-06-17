@@ -165,4 +165,87 @@ router.put('/unlike/:id', authentication, async (request, response) => {
 });
 
 //#endregion
+
+//#region ADD A COMMENT TO A POST
+router.post(
+    '/comment/:id',
+    [
+        authentication,
+        check('text', 'Text is required')
+    ],
+
+    async (request, response) => {
+        const errors = validationResult(request);
+        if (!errors.isEmpty()) {
+            return response.status(401).json({
+                errors: errors.array()
+            })
+        }
+
+        const { text } = request.body;
+
+        try {
+            const post = await Post.findById(request.params.id).sort({ date: -1 });
+            const user = await User.findById(request.user.id).select('-password');
+            if (!post) return response.status(400).json({ msg: 'Post not found' });
+
+            post.comments.unshift({
+                user: request.user.id,
+                text,
+                name: user.name,
+                avatar: user.avatar,
+            });
+
+            await post.save();
+
+            response.json(post);
+
+        } catch (error) {
+            console.log(error.message);
+            if (error.kind === 'ObjectId') {
+                return response.status(400).json({ msg: 'Post not found' });
+            } else {
+                return response.status(500).send('Server error');
+            }
+        }
+    })
+
+//#endregion
+
+//#region UNCOMMENT TO A POST
+router.delete(
+    '/comment/:id/:comment_id',
+    authentication,
+    async (request, response) => {
+        try {
+            const post = await Post.findById(request.params.id).sort({ date: -1 });
+            const comment = post.comment.find(comment => comment.id === request.params.comment_id);
+
+            if (!post)
+                return response.status(400).json({ msg: 'Post not found' });
+
+            if (comment.user.toString() === request.user.id)
+                return response.status(401).json({ msg: 'User not authorized' });
+
+            const removeComment = post.comments.map(comment => comment.id).indexOf(request.params.comment_id);
+
+            post.comments.splice(removeComment, 1)
+            await post.save();
+
+            response.json(post);
+        } catch (error) {
+            console.log(error.message);
+            if (error.kind === 'ObjectId') {
+                return response.status(400).json({ msg: 'Post not found' });
+            } else {
+                return response.status(500).send('Server error');
+            }
+        }
+    }
+);
+//#endregion
+
+
+
 module.exports = router;
+
