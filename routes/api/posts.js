@@ -7,7 +7,7 @@ const Post = require('../../models/Post');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 
-//GET ALL POSTS
+//#region GET ALL POSTS
 router.get(
     '/',
     authentication,
@@ -21,8 +21,9 @@ router.get(
         }
     }
 );
+//#endregion
 
-//ADD POST
+//#region ADD POST
 router.post(
     '/',
     [
@@ -57,8 +58,9 @@ router.post(
 
     }
 );
+//#endregion
 
-//GET POST BY ID
+//#region GET POST BY ID
 router.get('/:id', authentication, async (request, response) => {
     try {
         const post = await Post.findById(request.params.id);
@@ -76,8 +78,9 @@ router.get('/:id', authentication, async (request, response) => {
         }
     }
 });
+//#endregion
 
-//DELETE POST
+//#region DELETE POST
 router.delete('/:id', authentication, async (request, response) => {
     try {
         const post = await Post.findById(request.params.id);
@@ -101,8 +104,9 @@ router.delete('/:id', authentication, async (request, response) => {
         }
     }
 });
+//#endregion
 
-//LIKE A POST
+//#region LIKE A POST
 router.put('/like/:id', authentication, async (request, response) => {
     try {
         const post = await Post.findById(request.params.id);
@@ -128,7 +132,9 @@ router.put('/like/:id', authentication, async (request, response) => {
         response.status(500).send('Server error');
     }
 });
+//#endregion
 
+//#region UNLIKE A POST
 router.put('/unlike/:id', authentication, async (request, response) => {
 
     try {
@@ -157,4 +163,6 @@ router.put('/unlike/:id', authentication, async (request, response) => {
 
 
 });
+
+//#endregion
 module.exports = router;

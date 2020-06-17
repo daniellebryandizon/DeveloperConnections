@@ -8,7 +8,7 @@ const config = require('config');
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
 
-//GET SPECIFIC PROFILE
+//#region GET SPECIFIC PROFILE
 router.get('/me', auth, async (request, response) => {
     try {
         const { id, name, email, status } = request.body;
@@ -27,8 +27,9 @@ router.get('/me', auth, async (request, response) => {
         response.status(500).send('Server error');
     }
 });
+//#endregion
 
-//CREATE AND UPDATE PROFILE
+//#region CREATE AND UPDATE PROFILE
 router.post(
     '/',
     auth,
@@ -108,8 +109,9 @@ router.post(
         }
     }
 );
+//#endregion
 
-//GET ALL PROFILE
+//#region GET ALL PROFILE
 router.get('/', async (request, response) => {
     try {
         const profiles = await Profile.find().populate('user', ['name', 'avatar']);
@@ -120,8 +122,9 @@ router.get('/', async (request, response) => {
         response.status(500).send('Server');
     }
 });
+//#endregion
 
-//GET A PROFILE BY USER ID
+//#region GET A PROFILE BY USER ID
 router.get('/user/:user_id', async (request, response) => {
     try {
         const profile = await Profile.findOne({ user: request.params.user_id }).populate('user', ['name', 'avatar']);
@@ -145,8 +148,9 @@ router.get('/user/:user_id', async (request, response) => {
         }
     }
 });
+//#endregion
 
-//DELETE A PROFILE AND USER
+//#region DELETE A PROFILE AND USER
 router.delete('/', auth, async (request, response) => {
     try {
         await Profile.findOneAndRemove({ user: request.user.id });
@@ -159,8 +163,9 @@ router.delete('/', auth, async (request, response) => {
         response.status(500).send('Server error');
     }
 });
+//#endregion
 
-//CREATE AND UPDATE PROFILE EXPREIENCE
+//#region CREATE AND UPDATE PROFILE EXPREIENCE
 router.put(
     '/experience',
     [
@@ -202,8 +207,9 @@ router.put(
         }
 
     });
+//#endregion
 
-//DELETE PROFILE EXPRIENCE
+//#region DELETE PROFILE EXPRIENCE
 router.delete('/experience/:exp_id', auth, async (request, response) => {
     try {
         const profile = await Profile.findOne({ user: request.user.id });
@@ -219,7 +225,9 @@ router.delete('/experience/:exp_id', auth, async (request, response) => {
         response.status(500).send('Server error');
     }
 })
+//#endregion
 
+//#region GET GITHUB PROFILE
 router.get('/github/:username', (request, response) => {
     try {
         const options = {
@@ -243,5 +251,6 @@ router.get('/github/:username', (request, response) => {
         response.status(500).send('Server error');
     }
 });
+//#endregion
 
 module.exports = router;

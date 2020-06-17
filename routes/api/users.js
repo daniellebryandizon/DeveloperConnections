@@ -9,6 +9,7 @@ const { check, validationResult } = require('express-validator');
 
 const User = require('../../models/User');
 
+//#region ADD USER
 router.post(
     '/',
     //USER VALIDATIONS
@@ -93,5 +94,6 @@ router.post(
         }
     }
 );
+//#endregion
 
 module.exports = router;
