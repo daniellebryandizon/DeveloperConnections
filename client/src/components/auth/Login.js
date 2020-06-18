@@ -22,8 +22,6 @@ const Login = () => {
         event.preventDefault();
     }
 
-    const fromChange = {}
-
     return (
         <Fragment>
             <div className="alert alert-danger">
