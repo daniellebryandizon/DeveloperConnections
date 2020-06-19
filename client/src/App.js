@@ -8,7 +8,7 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Profile from './components/Profile';
 import store from './store';
-import Alert from './components/layout/alert';
+import Alert from './components/layout/Alert';
 
 import './App.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
