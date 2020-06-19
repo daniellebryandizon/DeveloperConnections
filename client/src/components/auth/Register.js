@@ -1,6 +1,10 @@
 import React, { Fragment, useState } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { setAlert } from '../../actions/alert';
+import PropTypes from 'prop-types';
 
-const Register = () => {
+const Register = ({ setAlert }) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -19,16 +23,14 @@ const Register = () => {
     }
 
     const submitForm = async (event) => {
-        
         event.preventDefault();
-        console.log('Hello');
-        if(password !== confirmPassword) {
-            console.log('Passwords does not match');
+        if (password !== confirmPassword) {
+            setAlert('Passwords does not match', 'danger');
         } else {
-            console.log('SUCCESS');
+            setAlert('Passwords matched', 'success');
         }
     }
- 
+
     return (
         <Fragment>
             <h1 className="large text-primary">Sign Up</h1>
@@ -51,7 +53,7 @@ const Register = () => {
                         placeholder="Password"
                         name="password"
                         minLength="6"
-                        value={password} 
+                        value={password}
                         onChange={formChange}
                     />
                 </div>
@@ -61,7 +63,7 @@ const Register = () => {
                         placeholder="Confirm Password"
                         name="confirmPassword"
                         minLength="6"
-                        value={confirmPassword} 
+                        value={confirmPassword}
                         onChange={formChange}
                     />
                 </div>
@@ -72,6 +74,10 @@ const Register = () => {
             </p>
         </Fragment>
     );
+};
+
+Register.propTypes = {
+    setAlert: PropTypes.func.isRequired
 }
 
-export default Register;
+export default connect(null, { setAlert } )(Register);
