@@ -24,7 +24,7 @@ router.get(
             response.json(user);
         } catch (error) {
             console.log(error.message);
-            response.status(500).send('Server error');
+            return response.status(500).send('Server error');
         }
     }
 )
@@ -82,7 +82,7 @@ router.post(
             )
         } catch (error) {
             console.log(error.message);
-            response.status(500).send('Server error')
+            return response.status(500).send('Server error');
         }
     }
 );
