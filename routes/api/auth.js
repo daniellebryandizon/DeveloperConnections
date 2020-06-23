@@ -8,6 +8,28 @@ const bcrypt = require('bcryptjs');
 
 const User = require('../../models/User');
 
+router.get(
+    '/',
+    auth,
+    async (request, response) => {
+        try {
+            const user = await User.findById(request.user.id).select('-password');
+
+            if (!user) {
+                return request.status(401).json({
+                    msg: 'Invalid credentials'
+                })
+            }
+
+            response.json(user);
+        } catch (error) {
+            console.log(error.message);
+            response.status(500).send('Server error');
+        }
+    }
+)
+
+
 router.post(
     '/',
     [
@@ -54,8 +76,8 @@ router.post(
                 config.get('jwtToken'),
                 { expiresIn: 36000 },
                 (error, token) => {
-                    if(error) throw error;
-                    response.json({token});
+                    if (error) throw error;
+                    response.json({ token });
                 }
             )
         } catch (error) {
