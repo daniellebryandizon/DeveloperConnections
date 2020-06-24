@@ -11,8 +11,7 @@ const Profile = require('../../models/Profile');
 //#region GET SPECIFIC PROFILE
 router.get('/me', auth, async (request, response) => {
     try {
-        const { id, name, email, status } = request.body;
-        const profile = await Profile.findOne({ user: id }).populate('user', ['name', 'avatar']);
+        const profile = await Profile.findOne({ user: request.user.id }).populate('user', ['name', 'avatar']);
 
         if (!profile) {
             return response.status(400).json({
