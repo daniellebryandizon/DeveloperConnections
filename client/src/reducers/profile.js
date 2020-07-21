@@ -1,6 +1,7 @@
 import {
     GET_PROFILE,
-    PROFILE_ERROR
+    PROFILE_ERROR,
+    CLEAR_PROFILE
 } from '../actions/types';
 
 const initialState = {
@@ -30,6 +31,13 @@ export default (state = initialState, action) => {
             return {
                 ...state,
                 error: payload,
+                loading: false
+            }
+        case CLEAR_PROFILE:
+            return {
+                ...state,
+                profile: null,
+                repos: [],
                 loading: false
             }
 
