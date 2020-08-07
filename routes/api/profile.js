@@ -152,6 +152,9 @@ router.get('/user/:user_id', async (request, response) => {
 //#region DELETE A PROFILE AND USER
 router.delete('/', auth, async (request, response) => {
     try {
+        // remove user posts
+        await this.post.deleteMany({ user: request.user.id });
+        
         await Profile.findOneAndRemove({ user: request.user.id });
 
         await User.findOneAndRemove({ _id: request.user.id });
@@ -186,7 +189,8 @@ router.put(
             title,
             company,
             location,
-            from, to,
+            from,
+            to,
             current,
             description
         } = request.body;
@@ -226,6 +230,69 @@ router.delete('/experience/:exp_id', auth, async (request, response) => {
 })
 //#endregion
 
+//#region CREATE AND UPDATE PROFILE EDUCATION
+router.put(
+    '/education',
+    [
+        auth,
+        check('school', 'School is required').not().isEmpty(),
+        check('degree', 'Defree is required').not().isEmpty(),
+        check('from', 'From date is required').not().isEmpty()
+    ],
+    async (request, response) => {
+        const errors = validationResult(request);
+
+        if (!errors.isEmpty()) {
+            response.status(401).json({
+                errors: errors.array()
+            })
+        }
+
+        const {
+            school,
+            degree,
+            fieldofstudy,
+            from,
+            to,
+            current,
+            description
+        } = request.body;
+
+        const newEducation = {
+            school, degree, fieldofstudy, from, to, current, description
+        };
+
+        try {
+            const profile = await Profile.findOne({ user: request.user.id });
+            profile.education.unshift(newEducation);
+            await profile.save();
+            response.json(profile);
+        } catch (error) {
+            console.error(error.message);
+            response.status(500).send('Server error');
+        }
+
+    });
+//#endregion
+
+//#region DELETE PROFILE EDUCATION
+router.delete('/education/:edu_id', auth, async (request, response) => {
+    try {
+        const profile = await Profile.findOne({ user: request.user.id });
+
+        const removeEducation = profile.education.map(item => item.id).indexOf(request.params.exp_id);
+        profile.education.splice(removeEducation, 1);
+
+        await profile.save();
+
+        response.json(profile);
+    } catch (error) {
+        console.log(error.message);
+        response.status(500).send('Server error');
+    }
+})
+//#endregion
+
 //#region GET GITHUB PROFILE
 router.get('/github/:username', (request, response) => {
     try {
@@ -237,10 +304,10 @@ router.get('/github/:username', (request, response) => {
         }
 
         requestGit(options, (error, res, body) => {
-            if(error) console.log(error)
+            if (error) console.log(error)
 
-            if(res.statusCode !== 200) {
-                return response.status(404).json({ msg: 'No Github profile found '});
+            if (res.statusCode !== 200) {
+                return response.status(404).json({ msg: 'No Github profile found ' });
             }
 
             response.json(JSON.parse(body));

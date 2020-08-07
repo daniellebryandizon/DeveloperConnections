@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { loginUser } from '../../actions/auth'
 
-const Login = ({loginUser, isAuthenticated}) => {
+const Login = ({ loginUser, isAuthenticated }) => {
 
     const [formData, setFormData] = useState({
         email: '',
@@ -27,38 +27,40 @@ const Login = ({loginUser, isAuthenticated}) => {
     }
 
     //Redirect if logged in
-    if(isAuthenticated) {
+    if (isAuthenticated) {
         return <Redirect to="/dashboard" />
     }
 
     return (
-        <Fragment>
-            <h1 className="large text-primary">Sign In</h1>
-            <p className="lead"><i className="fas fa-user"></i> Sign Into Your Account</p>
-            <form className="form" action="dashboard.html" onSubmit={login}>
-                <div className="form-group">
-                    <input
-                        type="email"
+        <Fragment >
+
+            <h1 className="large text-primary"> Sign In </h1>
+            <p className="lead" > < i className="fas fa-user"> </i> Sign Into Your Account</p >
+            <form className="form"
+                action="dashboard.html"
+                onSubmit={login} >
+                <div className="form-group" >
+                    <input type="email"
                         placeholder="Email Address"
                         name="email"
                         value={email}
-                        required
-                        onChange={formChange}
+                        required onChange={formChange}
                     />
                 </div>
-                <div className="form-group">
-                    <input
-                        type="password"
+                <div className="form-group" >
+                    <input type="password"
                         placeholder="Password"
                         name="password"
                         value={password}
                         onChange={formChange}
                     />
                 </div>
-                <input type="submit" className="btn btn-primary" value="Login" />
+                <input type="submit"
+                    className="btn btn-primary"
+                    value="Login" />
             </form>
-            <p className="my-1">
-                Don't have an account? <Link to="/login">Sign Up</Link>
+            <p className="my-1" >
+                Don 't have an account? <Link to="/login">Sign Up</Link>
             </p>
         </Fragment>
     );
@@ -69,7 +71,7 @@ const mapStateToProps = state => ({
 });
 
 Login.propTypes = {
-    loginUser : PropTypes.func.isRequired,
+    loginUser: PropTypes.func.isRequired,
     isAuthenticated: PropTypes.bool.isRequired
 }
 
