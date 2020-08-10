@@ -2,6 +2,8 @@ import axios from 'axios';
 import { setAlert } from './alert';
 import {
     GET_PROFILE,
+    GET_PROFILES,
+    GET_REPOS,
     PROFILE_ERROR,
     UPDATE_PROFILE,
     ACCOUNT_DELETED,
@@ -19,6 +21,73 @@ export const getCurrentProfile = () => async dispatch => {
     } catch (error) {
         console.log(error.message);
         console.log(error.response);
+        dispatch({
+            type: PROFILE_ERROR,
+            payload: {
+                msg: error.response.statusText,
+                status: error.response.status
+            }
+        });
+    }
+}
+
+//GET ALL PROFILES
+export const getProfiles = () => async dispatch => {
+
+    dispatch({
+        type: CLEAR_PROFILE
+    });
+
+    try {
+        const res = await axios.get('/api/profile');
+        dispatch({
+            type: GET_PROFILES,
+            payload: res.data
+        })
+    } catch (error) {
+        console.log(error.message);
+        dispatch({
+            type: PROFILE_ERROR,
+            payload: {
+                msg: error.response.statusText,
+                status: error.response.status
+            }
+        })
+    }
+}
+
+//GET PROFILE BY ID
+export const getProfileById = (userId) => async dispatch => {
+
+    try {
+        const res = await axios.get(`/api/profile/user/${userId}`);
+
+        dispatch({
+            type: GET_PROFILE,
+            payload: res.data
+        });
+    } catch (error) {
+        console.log(error.message);
+        dispatch({
+            type: PROFILE_ERROR,
+            payload: {
+                msg: error.response.statusText,
+                status: error.response.status
+            }
+        });
+    }
+}
+
+export const getGithubRepos = (username) => async dispatch => {
+    try {
+        const res = await axios.get(`/api/profile/github/${username}`);
+
+        dispatch({
+            type: GET_REPOS,
+            payload: res.data
+        });
+    } catch (error) {
+        console.log(error.message);
         dispatch({
             type: PROFILE_ERROR,
             payload: {
@@ -144,7 +213,7 @@ export const addEducation = (formData, history) => async dispatch => {
     }
 }
 
-// DELETE EXPERIENCE
+//DELETE EXPERIENCE
 export const deleteExperience = (id) => async dispatch => {
     try {
         const res = await axios.delete(`/api/profile/experience/${id}`);
@@ -168,6 +237,7 @@ export const deleteExperience = (id) => async dispatch => {
     }
 }
 
+//DELETE EDUCATION
 export const deleteEducation = (id) => async dispatch => {
     try {
         const res = await axios.delete(`/api/profile/education/${id}`);
@@ -192,10 +262,11 @@ export const deleteEducation = (id) => async dispatch => {
     }
 }
 
+//DELETE ACCOUNT
 export const deleteAccount = () => async dispatch => {
     if (window.confirm('Are you sure? This can NOT be undone!')) {
         try {
-            const res = await axios.delete(`/api/profile`);
+            //const res = await axios.delete(`/api/profile`);
 
             dispatch({
                 type: CLEAR_PROFILE

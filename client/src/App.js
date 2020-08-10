@@ -6,7 +6,8 @@ import Navbar from './components/layout/Navbar';
 import Landing from './components/layout/Landing';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
-import Profile from './components/Profile';
+import Profiles from './components/profiles/Profiles';
+import Profile from './components/profile/Profile';
 import Dashboard from './components/dashboard/Dashboard'
 import CreateProfile from './components/profile-form/CreateProfile';
 import EditProfile from './components/profile-form/EditProfile';
@@ -39,7 +40,8 @@ const App = () => {
         <section className="container">
           <Alert />
           <Switch>
-            <Route exact path="/profile" component={Profile} />
+            <Route exact path="/profiles" component={Profiles} />
+            <Route exact path="/profile/:id" component={Profile} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/login" component={Login} />
             <PrivateRoute exact path="/dashboard" component={Dashboard} />
