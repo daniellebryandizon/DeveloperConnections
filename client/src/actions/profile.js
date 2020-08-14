@@ -3,6 +3,7 @@ import { setAlert } from './alert';
 import {
     GET_PROFILE,
     GET_PROFILES,
+    DELETE_POST,
     GET_REPOS,
     PROFILE_ERROR,
     UPDATE_PROFILE,

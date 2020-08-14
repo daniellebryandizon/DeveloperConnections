@@ -12,7 +12,9 @@ import Dashboard from './components/dashboard/Dashboard'
 import CreateProfile from './components/profile-form/CreateProfile';
 import EditProfile from './components/profile-form/EditProfile';
 import AddExprience from './components/profile-form/AddExperience';
-import AddEduction from './components/profile-form/AddEducation'
+import AddEduction from './components/profile-form/AddEducation';
+import Posts from './components/posts/Posts';
+import Post from './components/post/Post';
 import PrivateRoute from './components/routing/PrivateRoute'
 import store from './store';
 import Alert from './components/layout/Alert';
@@ -49,6 +51,8 @@ const App = () => {
             <PrivateRoute exact path="/edit-profile" component={EditProfile} />
             <PrivateRoute exact path="/add-experience" component={AddExprience} />
             <PrivateRoute exact path="/add-education" component={AddEduction} />
+            <PrivateRoute exact path="/posts" component={Posts} />
+            <PrivateRoute exact path="/post/:id" component={Post} />
           </Switch>
         </section>
       </Router>

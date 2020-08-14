@@ -198,7 +198,7 @@ router.post(
 
             await post.save();
 
-            response.json(post);
+            response.json(post.comments);
 
         } catch (error) {
             console.log(error.message);
@@ -219,12 +219,12 @@ router.delete(
     async (request, response) => {
         try {
             const post = await Post.findById(request.params.id).sort({ date: -1 });
-            const comment = post.comment.find(comment => comment.id === request.params.comment_id);
+            const comment = post.comments.find(comment => comment._id == request.params.comment_id);
 
             if (!post)
                 return response.status(400).json({ msg: 'Post not found' });
 
-            if (comment.user.toString() === request.user.id)
+            if (comment.user.toString() !== request.user.id)
                 return response.status(401).json({ msg: 'User not authorized' });
 
             const removeComment = post.comments.map(comment => comment.id).indexOf(request.params.comment_id);
